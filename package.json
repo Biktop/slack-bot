@@ -1,0 +1,39 @@
+{
+  "name": "@b1kt0p/slack-bot",
+  "version": "0.0.1",
+  "description": "Slack bot helper",
+  "main": "./lib/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "build": "BABEL_ENV=production babel src --out-dir lib",
+    "prepublish": "rm -rf ./lib && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Biktop/slack-bot.git"
+  },
+  "keywords": [
+    "AWS",
+    "slack"
+  ],
+  "author": "Victor Savostin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Biktop/slack-bot/issues"
+  },
+  "homepage": "https://github.com/Biktop/slack-bot#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.10.4",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-preset-minify": "^0.5.1"
+  },
+  "dependencies": {
+    "@slack/client": "^5.0.2",
+    "claudia-api-builder": "^4.1.2",
+    "moment": "^2.27.0"
+  }
+}
