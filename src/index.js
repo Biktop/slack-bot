@@ -5,7 +5,7 @@ import { WebClient } from '@slack/client';
 
 import Message from './message';
 import Interaction from './interaction';
-import { ReplyError } from './utils';
+import { ReplyError, format_slack_date } from './utils';
 
 export default class SlackBot {
   constructor(opt = {}) {
@@ -173,6 +173,8 @@ export default class SlackBot {
     }
   }
 }
+
+export { ReplyError, format_slack_date };
 
 function test_pattern(patterns, event, value) {
   for (const i in patterns) {
