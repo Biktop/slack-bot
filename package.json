@@ -1,6 +1,6 @@
 {
   "name": "@b1kt0p/slack-bot",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Slack bot helper",
   "main": "./lib/index.js",
   "files": [
@@ -26,13 +26,13 @@
   },
   "homepage": "https://github.com/Biktop/slack-bot#readme",
   "devDependencies": {
-    "@babel/cli": "^7.12.7",
-    "@babel/core": "^7.12.7",
-    "@babel/preset-env": "^7.12.7",
+    "@babel/cli": "^7.12.16",
+    "@babel/core": "^7.12.16",
+    "@babel/preset-env": "^7.12.16",
     "babel-preset-minify": "^0.5.1"
   },
   "dependencies": {
-    "@slack/client": "^5.0.2",
+    "@slack/web-api": "^5.15.0",
     "claudia-api-builder": "^4.1.2",
     "moment": "^2.29.1"
   }

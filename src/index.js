@@ -1,7 +1,7 @@
 import url from 'url';
 import https from 'https';
 import moment from 'moment';
-import { WebClient } from '@slack/client';
+import { WebClient } from '@slack/web-api';
 
 import Message from './message';
 import Interaction from './interaction';
