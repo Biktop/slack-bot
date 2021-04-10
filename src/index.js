@@ -33,18 +33,19 @@ export default class SlackBot {
     }
   }
 
-  message(patterns, callback) {
+  message(patterns, callback, options) {
+    const { overhear = false } = options || {};
     if (typeof(patterns) === 'string' || patterns instanceof RegExp) {
       patterns = [patterns];
     }
 
     this._messageListeners.push(async (event) => {
-      if (test_pattern(patterns, event, event.message)) {
+      if ((overhear || event.direct_message || event.direct_mention) && test_pattern(patterns, event, event.message)) {
         try {
           await callback(event);
-        } catch(error) {
+        }
+        catch(error) {
           console.error(error);
-
           const text = error instanceof ReplyError ? error.message : 'Something went wrong';
           await this.replyEphemeral(event, { text  });
         }
@@ -75,7 +76,7 @@ export default class SlackBot {
     });
   }
 
-  async reply(event, reply) {
+  async reply({ event }, reply) {
     await this._client.chat.postMessage({
       channel: event.channel,
       text: reply.text,
@@ -83,11 +84,29 @@ export default class SlackBot {
     });
   }
 
-  async replyEphemeral(event, reply) {
+  async updateChat({ event }, reply) {
+    await this._client.chat.update({
+      ts: event.event_ts,
+      channel: event.channel,
+      text: reply.text,
+      attachments: reply.attachments
+    });
+  }
+
+  async replyEphemeral({ event }, reply) {
     await this._client.chat.postEphemeral({
       channel: event.channel,
       text: reply.text,
       user: event.user,
+      attachments: reply.attachments
+    });
+  }
+
+  async replyThread({ event }, reply) {
+    await this._client.chat.postMessage({
+      channel: event.channel,
+      thread_ts: event.ts,
+      text: reply.text,
       attachments: reply.attachments
     });
   }
@@ -123,16 +142,6 @@ export default class SlackBot {
     })
   }
 
-  async chatUpdate(event, reply) {
-    console.log(event.channel)
-    await this._client.chat.update({
-      ts: event.event_ts,
-      channel: event.channel,
-      text: reply.text,
-      attachments: reply.attachments
-    });
-  }
-
   async proceedEvent(event) {
     if (event.token !== this.opt.verification_token) {
       throw new Error(('Failed to verify token'));
@@ -150,17 +159,13 @@ export default class SlackBot {
         return {};
       }
 
-      if (!event.event.text) {
-        return {};
-      }
+      if (!event.event.text) { return {} }
 
       const message = new Message(this.bot, event);
-      if (!(message.direct_message || message.direct_mention) || timestamp.isAfter(message.timestamp)) {
-        return {};
-      }
+      if (timestamp.isAfter(message.timestamp)) { return {} }
 
       const results = await Promise.all(this._messageListeners.map(listener => listener(message)));
-      if (!results.includes(true)) {
+      if ((message.direct_message || message.direct_mention) && !results.includes(true)) {
         return await this.reply(message, { text: 'I don`t understand you.' });
       }
     }
