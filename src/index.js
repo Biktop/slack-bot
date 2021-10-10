@@ -77,38 +77,19 @@ export default class SlackBot {
   }
 
   async reply({ event }, reply) {
-    await this._client.chat.postMessage({
-      channel: event.channel,
-      text: reply.text,
-      attachments: reply.attachments
-    });
+    await this._client.chat.postMessage({ channel: event.channel, ...reply });
   }
 
   async updateChat({ event }, reply) {
-    await this._client.chat.update({
-      ts: event.event_ts,
-      channel: event.channel,
-      text: reply.text,
-      attachments: reply.attachments
-    });
+    await this._client.chat.update({ ts: event.event_ts, channel: event.channel, ...reply });
   }
 
   async replyEphemeral({ event }, reply) {
-    await this._client.chat.postEphemeral({
-      channel: event.channel,
-      text: reply.text,
-      user: event.user,
-      attachments: reply.attachments
-    });
+    await this._client.chat.postEphemeral({ channel: event.channel, user: event.user, ...reply });
   }
 
   async replyThread({ event }, reply) {
-    await this._client.chat.postMessage({
-      channel: event.channel,
-      thread_ts: event.ts,
-      text: reply.text,
-      attachments: reply.attachments
-    });
+    await this._client.chat.postMessage({ channel: event.channel, thread_ts: event.ts, ...reply });
   }
 
   updateInteraction(event, reply) {
