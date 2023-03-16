@@ -27,7 +27,7 @@ export default class SlackBot {
 
   get middleware() {
     const that = this;
-    return function(req, res, next) {
+    return function (req, res, next) {
       const result = that._proccessEvent(req.body) || {};
       res.json(result);
     }
@@ -35,7 +35,7 @@ export default class SlackBot {
 
   message(patterns, callback, options) {
     const { overhear = false } = options || {};
-    if (typeof(patterns) === 'string' || patterns instanceof RegExp) {
+    if (typeof (patterns) === 'string' || patterns instanceof RegExp) {
       patterns = [patterns];
     }
 
@@ -44,10 +44,10 @@ export default class SlackBot {
         try {
           await callback(event);
         }
-        catch(error) {
+        catch (error) {
           console.error(error);
           const text = error instanceof ReplyError ? error.message : 'Something went wrong';
-          await this.replyEphemeral(event, { text  });
+          await this.replyEphemeral(event, { text });
         }
         return true;
       }
@@ -56,7 +56,7 @@ export default class SlackBot {
   }
 
   interaction(patterns, callback) {
-    if (typeof(patterns) === 'string' || patterns instanceof RegExp) {
+    if (typeof (patterns) === 'string' || patterns instanceof RegExp) {
       patterns = [patterns];
     }
 
@@ -64,7 +64,7 @@ export default class SlackBot {
       if (test_pattern(patterns, event, event.data.callback_id)) {
         try {
           await callback(event);
-        } catch(error) {
+        } catch (error) {
           console.error(error);
 
           const text = error instanceof ReplyError ? error.message : 'Something went wrong';
@@ -77,19 +77,23 @@ export default class SlackBot {
   }
 
   async reply({ event }, reply) {
-    await this._client.chat.postMessage({ channel: event.channel, ...reply });
+    return await this._client.chat.postMessage({ channel: event.channel, ...reply });
   }
 
   async updateChat({ event }, reply) {
-    await this._client.chat.update({ ts: event.event_ts, channel: event.channel, ...reply });
+    return await this._client.chat.update({ ts: event.event_ts, channel: event.channel, ...reply });
   }
 
   async replyEphemeral({ event }, reply) {
-    await this._client.chat.postEphemeral({ channel: event.channel, user: event.user, ...reply });
+    return await this._client.chat.postEphemeral({ channel: event.channel, user: event.user, ...reply });
   }
 
   async replyThread({ event }, reply) {
-    await this._client.chat.postMessage({ channel: event.channel, thread_ts: event.ts, ...reply });
+    return await this._client.chat.postMessage({ channel: event.channel, thread_ts: event.ts, ...reply });
+  }
+
+  async deleteChat({ event }) {
+    return await this._client.chat.delete({ ts: event.event_ts, channel: event.channel });
   }
 
   updateInteraction(event, reply) {
