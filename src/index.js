@@ -25,6 +25,10 @@ export default class SlackBot {
     };
   }
 
+  get client() {
+    return this._client;
+  }
+
   get middleware() {
     const that = this;
     return function (req, res, next) {
