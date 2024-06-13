@@ -65,7 +65,8 @@ export default class SlackBot {
     }
 
     this._interactionListeners.push(async (event) => {
-      if (test_pattern(patterns, event, event.data.callback_id)) {
+      const value = event.data.callback_id ?? event.data.actions?.[0]?.action_id ?? '';
+      if (test_pattern(patterns, event, value)) {
         try {
           await callback(event);
         } catch (error) {
@@ -158,7 +159,7 @@ export default class SlackBot {
         return await this.reply(message, { text: 'I don`t understand you.' });
       }
     }
-    else if (event.type === 'interactive_message') {
+    else if (event.type === 'interactive_message' || event.type === 'block_actions') {
       const message = new Interaction(this.bot, event);
       if (timestamp.isAfter(message.timestamp)) {
         return {};
