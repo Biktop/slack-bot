@@ -160,7 +160,7 @@ export default class SlackBot {
         return await this.reply(message, { text: 'I don`t understand you.' });
       }
     }
-    else if (event.type === 'interactive_message' || event.type === 'block_actions') {
+    else if (event.type === 'interactive_message' || event.type === 'block_actions' || event.type === 'view_submission') {
       const message = new Interaction(this.bot, event);
       if (timestamp.isAfter(message.timestamp)) {
         return {};
