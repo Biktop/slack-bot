@@ -65,17 +65,18 @@ export default class SlackBot {
     }
 
     this._interactionListeners.push(async (event) => {
-      const value = event.data.callback_id ?? event.data.actions?.[0]?.action_id ?? '';
+      const value = event.data.callback_id ?? event.data.actions?.[0]?.action_id ?? event.data.view?.callback_id ?? '';
       if (test_pattern(patterns, event, value)) {
+        let result;
         try {
-          await callback(event);
+          result = await callback(event);
         } catch (error) {
           console.error(error);
 
           const text = error instanceof ReplyError ? error.message : 'Something went wrong';
           await this.replyEphemeral(event, { text });
         }
-        return true;
+        return result !== undefined ? result : true;
       }
       return false;
     });
@@ -164,6 +165,12 @@ export default class SlackBot {
       if (timestamp.isAfter(message.timestamp)) {
         return {};
       }
+      const results = await Promise.all(this._interactionListeners.map(listener => listener(message)));
+      const actionResult = results.find(r => r && typeof r === 'object');
+      if (actionResult) return actionResult;
+    }
+    else if (event.type === 'view_closed') {
+      const message = new Interaction(this.bot, event);
       await Promise.all(this._interactionListeners.map(listener => listener(message)));
     }
   }
